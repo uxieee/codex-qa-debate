@@ -44,7 +44,7 @@ A single AI reviewing its own code has blind spots. The same reasoning that prod
 ## Install
 
 ```bash
-npx skillsadd uxieee/codex-qa-debate
+npx skills add uxieee/codex-qa-debate
 ```
 
 Or manually:
