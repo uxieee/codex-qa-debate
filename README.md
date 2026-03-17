@@ -79,12 +79,14 @@ code review with codex
 ```
 
 The skill handles everything:
-1. Gathers changed files via `git diff`
-2. Asks if you have a spec or out-of-scope items
-3. Runs all 3 debate rounds
-4. Presents the summary table
-5. Waits for your approval
-6. Fixes agreed issues and commits
+1. Reads your Codex config and shows current model/reasoning settings
+2. Lets you override model or reasoning effort (or just say "go" for defaults)
+3. Gathers changed files via `git diff`
+4. Asks if you have a spec or out-of-scope items
+5. Runs all 3 debate rounds
+6. Presents the summary table
+7. Waits for your approval
+8. Fixes agreed issues and commits
 
 ## The Staff Engineer Persona
 
@@ -98,7 +100,16 @@ Codex doesn't just "review" your code. It reviews it as a Staff Engineer who:
 
 ## Configuration
 
-The skill uses `gpt-5.4-xhigh` by default for maximum review quality. To change the model, edit the `-m` flag in the `codex exec` commands inside `SKILL.md`.
+The skill reads your Codex config (`~/.codex/config.toml`) and shows you the current model and reasoning effort before starting. You can override either one inline:
+
+```
+use o3 with high reasoning
+```
+
+Or just say "go" to use your defaults. No need to edit the skill file.
+
+**Available models:** `o3`, `o4-mini`, `gpt-5.4`, `gpt-4.1`
+**Reasoning levels:** `low`, `medium`, `high`, `xhigh`
 
 Codex runs in **read-only sandbox mode** (`-s read-only`) — it can read your codebase but cannot modify any files.
 

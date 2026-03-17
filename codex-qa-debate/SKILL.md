@@ -21,10 +21,25 @@ A single AI reviewing its own code has blind spots. This skill brings in a secon
 
 Before starting the debate, collect the review context:
 
-1. **Identify changed files:** Run `git diff main...HEAD --name-only` (or the appropriate base branch). If the user specifies files or a commit range, use that instead.
-2. **Read the changed files** so you have the full content for the review prompt.
-3. **Check for a spec or design doc:** Ask the user if there's a spec the implementation should be reviewed against. If they provide one, read it. If not, proceed without — Codex will review against general best practices.
-4. **Identify out-of-scope items:** Ask the user if there's anything Codex should NOT flag (known shortcuts, intentionally deferred work, tech debt). If they don't have any, proceed without.
+1. **Read Codex config:** Read `~/.codex/config.toml` to get the current model and reasoning effort settings. Present them to the user:
+
+> **Codex QA Debate — Configuration**
+>
+> Current Codex settings:
+> - Model: `<model from config>`
+> - Reasoning effort: `<model_reasoning_effort from config>`
+>
+> Available models: `o3`, `o4-mini`, `gpt-5.4`, `gpt-4.1`
+> Reasoning levels: `low`, `medium`, `high`, `xhigh`
+>
+> Say **"go"** to use current settings, or override (e.g. "use o3 with high reasoning").
+
+If the user overrides, pass `-m <model>` and/or `-c model_reasoning_effort="<level>"` to `codex exec`. If they say "go", omit both flags so Codex uses its config defaults.
+
+2. **Identify changed files:** Run `git diff main...HEAD --name-only` (or the appropriate base branch). If the user specifies files or a commit range, use that instead.
+3. **Read the changed files** so you have the full content for the review prompt.
+4. **Check for a spec or design doc:** Ask the user if there's a spec the implementation should be reviewed against. If they provide one, read it. If not, proceed without — Codex will review against general best practices.
+5. **Identify out-of-scope items:** Ask the user if there's anything Codex should NOT flag (known shortcuts, intentionally deferred work, tech debt). If they don't have any, proceed without.
 
 Tell the user: "Starting Codex QA debate. I'll show you each round as it happens."
 
@@ -33,7 +48,7 @@ Tell the user: "Starting Codex QA debate. I'll show you each round as it happens
 Construct the Round 1 prompt and run Codex:
 
 ```bash
-codex exec -m gpt-5.4-xhigh --ephemeral -s read-only \
+codex exec --ephemeral -s read-only \
   -o /tmp/codex-qa-$(date +%s)-round1.md \
   -C "<project-dir>" \
   "<round 1 prompt>"
@@ -100,7 +115,7 @@ Show the user your evaluation: "Round 2 — My rebuttals:" with your agree/disag
 Then construct the Round 2 prompt and run Codex:
 
 ```bash
-codex exec -m gpt-5.4-xhigh --ephemeral -s read-only \
+codex exec --ephemeral -s read-only \
   -o /tmp/codex-qa-$(date +%s)-round2.md \
   -C "<project-dir>" \
   "<round 2 prompt>"
@@ -139,7 +154,7 @@ For each disputed finding, respond with:
 Construct the Round 3 prompt with the full debate history:
 
 ```bash
-codex exec -m gpt-5.4-xhigh --ephemeral -s read-only \
+codex exec --ephemeral -s read-only \
   -o /tmp/codex-qa-$(date +%s)-round3.md \
   -C "<project-dir>" \
   "<round 3 prompt>"
